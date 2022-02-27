@@ -1,0 +1,17 @@
+type LooksReward @entity {
+  id: ID!
+  rewardPerBlockForStaking: BigInt!
+  rewardPerBlockForOthers: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type FeeSharingReward @entity {
+  id: ID!
+  reward: BigInt!
+  rewardPerBlock: BigInt!
+  totalShareInWeth: BigInt!
+  apy: Float!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
