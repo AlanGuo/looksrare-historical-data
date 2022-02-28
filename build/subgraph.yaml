@@ -3,25 +3,62 @@ schema:
   file: schema.graphql
 dataSources:
   - kind: ethereum
-    name: Looks
+    name: LooksDistributor
     network: mainnet
     source:
-      address: "0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7"
-      abi: looks
-      startBlock: 11565020
+      address: "0x465a790b428268196865a3ae2648481ad7e0d3b1"
+      abi: LooksDistributor
+      startBlock: 14290000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Token
-        - User
+        - LooksReward
       abis:
-        - name: looks
-          file: Looks/abis/looks.json
+        - name: LooksDistributor
+          file: LooksDistributor/abis/LooksDistributor.json
+      blockHandlers:
+        - handler: handleBlock
+      file: LooksDistributor/LooksDistributor.wasm
+  - kind: ethereum
+    name: FeeSharingSystem
+    network: mainnet
+    source:
+      address: "0xbcd7254a1d759efa08ec7c3291b2e85c5dcc12ce"
+      abi: FeeSharingSystem
+      startBlock: 14290000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FeeSharingReward
+      abis:
+        - name: FeeSharingSystem
+          file: FeeSharingSystem/abis/FeeSharingSystem.json
+        - name: UniswapLooksWeth
+          file: FeeSharingSystem/abis/UniswapLooksWeth.json
+      blockHandlers:
+        - handler: handleBlock
+      file: FeeSharingSystem/FeeSharingSystem.wasm
+  - kind: ethereum
+    name: UniswapLooksWeth
+    network: mainnet
+    source:
+      address: "0xDC00bA87Cc2D99468f7f34BC04CBf72E111A32f7"
+      abi: UniswapLooksWeth
+      startBlock: 14290000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - UniswapLooksWeth
+      abis:
+        - name: UniswapLooksWeth
+          file: UniswapLooksWeth/abis/UniswapLooksWeth.json
       eventHandlers:
-        - event: TokenURIUpdated(indexed uint256,address,string)
-          handler: handleTokenURIUpdated
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleTransfer
-      file: Looks/Looks.wasm
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+      file: UniswapLooksWeth/UniswapLooksWeth.wasm

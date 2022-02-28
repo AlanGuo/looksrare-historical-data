@@ -8,37 +8,57 @@ dataSources:
     source:
       address: "0x465a790b428268196865a3ae2648481ad7e0d3b1"
       abi: LooksDistributor
-      startBlock: 11565020
+      startBlock: 14290000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - LooksRewards
+        - LooksReward
       abis:
         - name: LooksDistributor
           file: ./abis/LooksDistributor.json
-      eventHandlers:
-        - event: NewRewardsPerBlock(indexed uint256,uint256,uint256,uint256)
-          handler: handleNewRewardsPerBlock
-      file: ./src/lookDistributorMapping.ts
+      blockHandlers:
+        - handler: handleBlock
+      file: ./src/looksDistributorMapping.ts
   - kind: ethereum
     name: FeeSharingSystem
     network: mainnet
     source:
       address: "0xbcd7254a1d759efa08ec7c3291b2e85c5dcc12ce"
       abi: FeeSharingSystem
-      startBlock: 11565020
+      startBlock: 14290000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - WETHRewards
+        - FeeSharingReward
       abis:
         - name: FeeSharingSystem
           file: ./abis/FeeSharingSystem.json
-      eventHandlers:
-        - event: NewRewardPeriod(uint256,uint256,uint256)
-          handler: handleNewRewardPeriod
+        - name: UniswapLooksWeth
+          file: ./abis/UniswapLooksWeth.json
+      blockHandlers:
+        - handler: handleBlock
       file: ./src/feeSharingSystemMapping.ts
+  - kind: ethereum
+    name: UniswapLooksWeth
+    network: mainnet
+    source:
+      address: "0xDC00bA87Cc2D99468f7f34BC04CBf72E111A32f7"
+      abi: UniswapLooksWeth
+      startBlock: 14290000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - UniswapLooksWeth
+      abis:
+        - name: UniswapLooksWeth
+          file: ./abis/UniswapLooksWeth.json
+      eventHandlers:
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+      file: ./src/uniswapLooksWethMapping.ts

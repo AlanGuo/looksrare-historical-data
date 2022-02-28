@@ -8,9 +8,16 @@ type LooksReward @entity {
 
 type FeeSharingReward @entity {
   id: ID!
-  rewardPerBlock: BigInt!
-  totalSharesInWei: BigInt!
   apy: BigDecimal!
+  rewardWethPerBlock: BigInt!
+  looksPriceWethInWei: BigInt! 
+  totalSharesLooksInWei: BigInt!
   blockNumber: BigInt!
   timestamp: BigInt!
+}
+
+type UniswapLooksWeth @entity {
+  id: ID!
+  looksBalance: BigInt!
+  wethBalance: BigInt!
 }

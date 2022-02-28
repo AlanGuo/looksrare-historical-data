@@ -1,15 +1,23 @@
-type Token @entity {
+type LooksReward @entity {
   id: ID!
-  tokenID: BigInt!
-  contentURI: String!
-  metadataURI: String!
-  createAtTimestamp: BigInt!
-  owner: User!
-  creator: User!
+  rewardPerBlockForStaking: BigInt!
+  rewardPerBlockForOthers: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
 }
 
-type User @entity {
+type FeeSharingReward @entity {
   id: ID!
-  tokens: [Token!]! @derivedFrom(field: "owner")
-  created: [Token!]! @derivedFrom(field: "creator")
+  apy: BigDecimal!
+  rewardWethPerBlock: BigInt!
+  looksPriceWethInWei: BigInt! 
+  totalSharesLooksInWei: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type UniswapLooksWeth @entity {
+  id: ID!
+  looksBalance: BigInt!
+  wethBalance: BigInt!
 }

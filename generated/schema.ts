@@ -90,9 +90,10 @@ export class FeeSharingReward extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("rewardPerBlock", Value.fromBigInt(BigInt.zero()));
-    this.set("totalSharesInWei", Value.fromBigInt(BigInt.zero()));
     this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("rewardWethPerBlock", Value.fromBigInt(BigInt.zero()));
+    this.set("looksPriceWethInWei", Value.fromBigInt(BigInt.zero()));
+    this.set("totalSharesLooksInWei", Value.fromBigInt(BigInt.zero()));
     this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
   }
@@ -125,24 +126,6 @@ export class FeeSharingReward extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get rewardPerBlock(): BigInt {
-    let value = this.get("rewardPerBlock");
-    return value!.toBigInt();
-  }
-
-  set rewardPerBlock(value: BigInt) {
-    this.set("rewardPerBlock", Value.fromBigInt(value));
-  }
-
-  get totalSharesInWei(): BigInt {
-    let value = this.get("totalSharesInWei");
-    return value!.toBigInt();
-  }
-
-  set totalSharesInWei(value: BigInt) {
-    this.set("totalSharesInWei", Value.fromBigInt(value));
-  }
-
   get apy(): BigDecimal {
     let value = this.get("apy");
     return value!.toBigDecimal();
@@ -150,6 +133,33 @@ export class FeeSharingReward extends Entity {
 
   set apy(value: BigDecimal) {
     this.set("apy", Value.fromBigDecimal(value));
+  }
+
+  get rewardWethPerBlock(): BigInt {
+    let value = this.get("rewardWethPerBlock");
+    return value!.toBigInt();
+  }
+
+  set rewardWethPerBlock(value: BigInt) {
+    this.set("rewardWethPerBlock", Value.fromBigInt(value));
+  }
+
+  get looksPriceWethInWei(): BigInt {
+    let value = this.get("looksPriceWethInWei");
+    return value!.toBigInt();
+  }
+
+  set looksPriceWethInWei(value: BigInt) {
+    this.set("looksPriceWethInWei", Value.fromBigInt(value));
+  }
+
+  get totalSharesLooksInWei(): BigInt {
+    let value = this.get("totalSharesLooksInWei");
+    return value!.toBigInt();
+  }
+
+  set totalSharesLooksInWei(value: BigInt) {
+    this.set("totalSharesLooksInWei", Value.fromBigInt(value));
   }
 
   get blockNumber(): BigInt {
@@ -168,5 +178,61 @@ export class FeeSharingReward extends Entity {
 
   set timestamp(value: BigInt) {
     this.set("timestamp", Value.fromBigInt(value));
+  }
+}
+
+export class UniswapLooksWeth extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("looksBalance", Value.fromBigInt(BigInt.zero()));
+    this.set("wethBalance", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save UniswapLooksWeth entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save UniswapLooksWeth entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("UniswapLooksWeth", id.toString(), this);
+    }
+  }
+
+  static load(id: string): UniswapLooksWeth | null {
+    return changetype<UniswapLooksWeth | null>(
+      store.get("UniswapLooksWeth", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get looksBalance(): BigInt {
+    let value = this.get("looksBalance");
+    return value!.toBigInt();
+  }
+
+  set looksBalance(value: BigInt) {
+    this.set("looksBalance", Value.fromBigInt(value));
+  }
+
+  get wethBalance(): BigInt {
+    let value = this.get("wethBalance");
+    return value!.toBigInt();
+  }
+
+  set wethBalance(value: BigInt) {
+    this.set("wethBalance", Value.fromBigInt(value));
   }
 }
