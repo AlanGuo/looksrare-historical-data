@@ -91,6 +91,8 @@ export class FeeSharingReward extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("rewardPerBlock", Value.fromBigInt(BigInt.zero()));
+    this.set("totalSharesInWei", Value.fromBigInt(BigInt.zero()));
+    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
   }
@@ -130,6 +132,24 @@ export class FeeSharingReward extends Entity {
 
   set rewardPerBlock(value: BigInt) {
     this.set("rewardPerBlock", Value.fromBigInt(value));
+  }
+
+  get totalSharesInWei(): BigInt {
+    let value = this.get("totalSharesInWei");
+    return value!.toBigInt();
+  }
+
+  set totalSharesInWei(value: BigInt) {
+    this.set("totalSharesInWei", Value.fromBigInt(value));
+  }
+
+  get apy(): BigDecimal {
+    let value = this.get("apy");
+    return value!.toBigDecimal();
+  }
+
+  set apy(value: BigDecimal) {
+    this.set("apy", Value.fromBigDecimal(value));
   }
 
   get blockNumber(): BigInt {
