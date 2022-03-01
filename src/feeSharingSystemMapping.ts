@@ -3,26 +3,28 @@ import { FeeSharingSystem } from "../generated/FeeSharingSystem/FeeSharingSystem
 import { UniswapLooksWeth } from "../generated/UniswapLooksWeth/UniswapLooksWeth"
 import { Address, ethereum, BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import {
-  FeeSharingReward,
+  FeeSharingReward, Reward,
 } from "../generated/schema"
-const feeSharingRewardContractAddr: string = "0xbcd7254a1d759efa08ec7c3291b2e85c5dcc12ce"
-const uniV2LpContractAddr = "0xDC00bA87Cc2D99468f7f34BC04CBf72E111A32f7"
-const AVG_BLOCKS_PER_YEAR = 2102400
-const WeiPerEther = BigInt.fromU32(10).pow(18)
+import { AVG_BLOCKS_PER_YEAR, feeSharingRewardContractAddr, lookDistributorContractAddr, uniV2LpContractAddr, WeiPerEther } from "./config"
+import { LooksDistributor } from "../generated/LooksDistributor/LooksDistributor"
 
 export function handleBlock(block: ethereum.Block): void {
-  let feeSharingReward = FeeSharingReward.load(block.number.toHexString())
+  let reward = Reward.load(block.number.toString())
+  if (!reward) {
+    reward = new Reward(block.number.toString())
+  }
+  let feeSharingReward = FeeSharingReward.load(block.number.toString())
   if(!feeSharingReward) {
-    feeSharingReward = new FeeSharingReward(block.number.toHexString())
+    feeSharingReward = new FeeSharingReward(block.number.toString())
   }
   let feeSharingSystemContract = FeeSharingSystem.bind(Address.fromString(feeSharingRewardContractAddr))
   // get totalStakingShares from contract
-  feeSharingReward.rewardWethPerBlock = feeSharingSystemContract.currentRewardPerBlock()
+  feeSharingReward.wethRewardsPerBlock = feeSharingSystemContract.currentRewardPerBlock()
   const totalShares = feeSharingSystemContract.totalShares()
   const sharePriceInLOOKS = feeSharingSystemContract.calculateSharePriceInLOOKS()
   log.debug("totalShares: {}, sharePriceInLOOKS: {}", [totalShares.toString(), sharePriceInLOOKS.toString()])
-  feeSharingReward.totalSharesLooksInWei = totalShares.times(sharePriceInLOOKS).div(BigInt.fromU32(10).pow(18))
-  const totalRewardWethPerYearInWei = WeiPerEther.times(feeSharingReward.rewardWethPerBlock).times(BigInt.fromU32(AVG_BLOCKS_PER_YEAR))
+  const totalSharesLooksInWei = totalShares.times(sharePriceInLOOKS).div(BigInt.fromU32(10).pow(18))
+  const totalRewardWethPerYearInWei = WeiPerEther.times(feeSharingReward.wethRewardsPerBlock).times(BigInt.fromU32(AVG_BLOCKS_PER_YEAR))
   log.debug("totalRewardWethPerYearInWei: {}", [totalRewardWethPerYearInWei.toString()])
   // calculate looksPriceWeth from uniswap lp-pool
   const uniswapLooksWethLP = UniswapLooksWeth.bind(Address.fromString(uniV2LpContractAddr))
@@ -36,13 +38,19 @@ export function handleBlock(block: ethereum.Block): void {
   const looksPriceWeth = BigDecimal.fromString(WethPerLpToken.toString()).div(looksPerLpToken)
   const looksPriceWethInWeiDecimal = looksPriceWeth.times(BigDecimal.fromString((BigInt.fromU32(10).pow(18)).toString()))
   const looksPriceWethInWei = BigInt.fromString(looksPriceWethInWeiDecimal.toString().split(".")[0])
-  feeSharingReward.looksPriceWethInWei = looksPriceWethInWei
   log.debug("looksPriceWethInWei: {}", [looksPriceWethInWei.toString()])
-  const relativeValueOfStakedTokensInWei = feeSharingReward.totalSharesLooksInWei.times(looksPriceWethInWei)
+  const relativeValueOfStakedTokensInWei = totalSharesLooksInWei.times(looksPriceWethInWei)
   feeSharingReward.apy = BigDecimal.fromString(totalRewardWethPerYearInWei.toString()).
   div(BigDecimal.fromString(relativeValueOfStakedTokensInWei.toString()))
   log.debug("apy: {}", [feeSharingReward.apy.toString()])
-  feeSharingReward.blockNumber = block.number
-  feeSharingReward.timestamp = block.timestamp
   feeSharingReward.save()
+  reward.feeSharingReward = block.number.toString()
+  
+  // calculate sum of apy
+  const looksDistributorContract = LooksDistributor.bind(Address.fromString(lookDistributorContractAddr))
+  const looksRewardsPerBlock = looksDistributorContract.rewardPerBlockForStaking()
+  const totalLooksRewardsPerYear = looksRewardsPerBlock.times(BigInt.fromU32(AVG_BLOCKS_PER_YEAR))
+  const looksRewardApy = BigDecimal.fromString(totalLooksRewardsPerYear.toString()).div(BigDecimal.fromString(reward.totalLooksStaked.toString()))
+  reward.apy = feeSharingReward.apy.plus(looksRewardApy)
+  reward.save()
 }

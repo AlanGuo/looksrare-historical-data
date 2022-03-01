@@ -14,6 +14,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
+        - Reward
         - LooksReward
       abis:
         - name: LooksDistributor
@@ -33,32 +34,15 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
+        - Reward
         - FeeSharingReward
       abis:
         - name: FeeSharingSystem
           file: FeeSharingSystem/abis/FeeSharingSystem.json
         - name: UniswapLooksWeth
           file: FeeSharingSystem/abis/UniswapLooksWeth.json
+        - name: LooksDistributor
+          file: FeeSharingSystem/abis/LooksDistributor.json
       blockHandlers:
         - handler: handleBlock
       file: FeeSharingSystem/FeeSharingSystem.wasm
-  - kind: ethereum
-    name: UniswapLooksWeth
-    network: mainnet
-    source:
-      address: "0xDC00bA87Cc2D99468f7f34BC04CBf72E111A32f7"
-      abi: UniswapLooksWeth
-      startBlock: 14290000
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - UniswapLooksWeth
-      abis:
-        - name: UniswapLooksWeth
-          file: UniswapLooksWeth/abis/UniswapLooksWeth.json
-      eventHandlers:
-        - event: Mint(indexed address,uint256,uint256)
-          handler: handleMint
-      file: UniswapLooksWeth/UniswapLooksWeth.wasm

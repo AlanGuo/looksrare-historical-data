@@ -1,24 +1,28 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts"
+import { Address, ethereum, BigInt, BigDecimal, log } from "@graphprotocol/graph-ts"
 import {
   LooksDistributor,
 } from "../generated/LooksDistributor/LooksDistributor"
 
-const lookDistributorContractAddr = "0x465A790B428268196865a3AE2648481ad7e0d3b1"
-
 import {
-  LooksReward,
+  Reward,
+  LooksReward
 } from "../generated/schema"
+import { AVG_BLOCKS_PER_YEAR, lookDistributorContractAddr } from "./config"
 
 export function handleBlock(block: ethereum.Block): void {
-  let looksReward = LooksReward.load(block.number.toString())
-  // created one if it's not existed
-  if (!looksReward) {
-    looksReward = new LooksReward(block.number.toString())
+  let reward = Reward.load(block.number.toString())
+  if (!reward) {
+    reward = new Reward(block.number.toString())
   }
-  looksReward.timestamp = block.timestamp
+  reward.timestamp = block.timestamp
+  let looksReward = new LooksReward(block.number.toString())
   const looksDistributorContract = LooksDistributor.bind(Address.fromString(lookDistributorContractAddr))
-  looksReward.rewardPerBlockForStaking = looksDistributorContract.rewardPerBlockForStaking()
-  looksReward.rewardPerBlockForOthers = looksDistributorContract.rewardPerBlockForOthers()
-  looksReward.blockNumber = block.number
+  reward.totalLooksStaked = looksDistributorContract.totalAmountStaked()
+  looksReward.looksRewardsPerBlock = looksDistributorContract.rewardPerBlockForStaking()
+  const totalLooksRewardsPerYear = looksReward.looksRewardsPerBlock.times(BigInt.fromU32(AVG_BLOCKS_PER_YEAR))
+  looksReward.apy = BigDecimal.fromString(totalLooksRewardsPerYear.toString()).div(BigDecimal.fromString(reward.totalLooksStaked.toString()))
+  log.debug("totalLooksStaked: {}, looksRewardsPerBlock: {}, apy: {}", [reward.totalLooksStaked.toString(), looksReward.looksRewardsPerBlock.toString(), looksReward.apy.toString()])
   looksReward.save()
+  reward.looksReward = block.number.toString()
+  reward.save()
 }

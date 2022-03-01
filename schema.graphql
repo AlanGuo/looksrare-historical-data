@@ -1,23 +1,26 @@
+type Reward @entity {
+  id: ID!
+  apy: BigDecimal!
+  totalLooksStaked: BigInt!
+  timestamp: BigInt!
+  looksReward: LooksReward
+  feeSharingReward: FeeSharingReward
+}
+
 type LooksReward @entity {
   id: ID!
-  rewardPerBlockForStaking: BigInt!
-  rewardPerBlockForOthers: BigInt!
-  blockNumber: BigInt!
-  timestamp: BigInt!
+  apy: BigDecimal!
+  looksRewardsPerBlock: BigInt!
+  reward: Reward @derivedFrom(field: "looksReward")
 }
 
 type FeeSharingReward @entity {
   id: ID!
   apy: BigDecimal!
-  rewardWethPerBlock: BigInt!
-  looksPriceWethInWei: BigInt! 
-  totalSharesLooksInWei: BigInt!
-  blockNumber: BigInt!
-  timestamp: BigInt!
+  wethRewardsPerBlock: BigInt!
+  reward: Reward @derivedFrom(field: "feeSharingReward")
 }
 
 type UniswapLooksWeth @entity {
   id: ID!
-  looksBalance: BigInt!
-  wethBalance: BigInt!
 }

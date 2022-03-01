@@ -11,15 +11,111 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class Reward extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("totalLooksStaked", Value.fromBigInt(BigInt.zero()));
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Reward entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Reward entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Reward", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Reward | null {
+    return changetype<Reward | null>(store.get("Reward", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get apy(): BigDecimal {
+    let value = this.get("apy");
+    return value!.toBigDecimal();
+  }
+
+  set apy(value: BigDecimal) {
+    this.set("apy", Value.fromBigDecimal(value));
+  }
+
+  get totalLooksStaked(): BigInt {
+    let value = this.get("totalLooksStaked");
+    return value!.toBigInt();
+  }
+
+  set totalLooksStaked(value: BigInt) {
+    this.set("totalLooksStaked", Value.fromBigInt(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get looksReward(): string | null {
+    let value = this.get("looksReward");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set looksReward(value: string | null) {
+    if (!value) {
+      this.unset("looksReward");
+    } else {
+      this.set("looksReward", Value.fromString(<string>value));
+    }
+  }
+
+  get feeSharingReward(): string | null {
+    let value = this.get("feeSharingReward");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feeSharingReward(value: string | null) {
+    if (!value) {
+      this.unset("feeSharingReward");
+    } else {
+      this.set("feeSharingReward", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class LooksReward extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("rewardPerBlockForStaking", Value.fromBigInt(BigInt.zero()));
-    this.set("rewardPerBlockForOthers", Value.fromBigInt(BigInt.zero()));
-    this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
-    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("looksRewardsPerBlock", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -48,40 +144,39 @@ export class LooksReward extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get rewardPerBlockForStaking(): BigInt {
-    let value = this.get("rewardPerBlockForStaking");
+  get apy(): BigDecimal {
+    let value = this.get("apy");
+    return value!.toBigDecimal();
+  }
+
+  set apy(value: BigDecimal) {
+    this.set("apy", Value.fromBigDecimal(value));
+  }
+
+  get looksRewardsPerBlock(): BigInt {
+    let value = this.get("looksRewardsPerBlock");
     return value!.toBigInt();
   }
 
-  set rewardPerBlockForStaking(value: BigInt) {
-    this.set("rewardPerBlockForStaking", Value.fromBigInt(value));
+  set looksRewardsPerBlock(value: BigInt) {
+    this.set("looksRewardsPerBlock", Value.fromBigInt(value));
   }
 
-  get rewardPerBlockForOthers(): BigInt {
-    let value = this.get("rewardPerBlockForOthers");
-    return value!.toBigInt();
+  get reward(): string | null {
+    let value = this.get("reward");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set rewardPerBlockForOthers(value: BigInt) {
-    this.set("rewardPerBlockForOthers", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get timestamp(): BigInt {
-    let value = this.get("timestamp");
-    return value!.toBigInt();
-  }
-
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set reward(value: string | null) {
+    if (!value) {
+      this.unset("reward");
+    } else {
+      this.set("reward", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -91,11 +186,7 @@ export class FeeSharingReward extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("rewardWethPerBlock", Value.fromBigInt(BigInt.zero()));
-    this.set("looksPriceWethInWei", Value.fromBigInt(BigInt.zero()));
-    this.set("totalSharesLooksInWei", Value.fromBigInt(BigInt.zero()));
-    this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
-    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("wethRewardsPerBlock", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -135,49 +226,30 @@ export class FeeSharingReward extends Entity {
     this.set("apy", Value.fromBigDecimal(value));
   }
 
-  get rewardWethPerBlock(): BigInt {
-    let value = this.get("rewardWethPerBlock");
+  get wethRewardsPerBlock(): BigInt {
+    let value = this.get("wethRewardsPerBlock");
     return value!.toBigInt();
   }
 
-  set rewardWethPerBlock(value: BigInt) {
-    this.set("rewardWethPerBlock", Value.fromBigInt(value));
+  set wethRewardsPerBlock(value: BigInt) {
+    this.set("wethRewardsPerBlock", Value.fromBigInt(value));
   }
 
-  get looksPriceWethInWei(): BigInt {
-    let value = this.get("looksPriceWethInWei");
-    return value!.toBigInt();
+  get reward(): string | null {
+    let value = this.get("reward");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set looksPriceWethInWei(value: BigInt) {
-    this.set("looksPriceWethInWei", Value.fromBigInt(value));
-  }
-
-  get totalSharesLooksInWei(): BigInt {
-    let value = this.get("totalSharesLooksInWei");
-    return value!.toBigInt();
-  }
-
-  set totalSharesLooksInWei(value: BigInt) {
-    this.set("totalSharesLooksInWei", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get timestamp(): BigInt {
-    let value = this.get("timestamp");
-    return value!.toBigInt();
-  }
-
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set reward(value: string | null) {
+    if (!value) {
+      this.unset("reward");
+    } else {
+      this.set("reward", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -185,9 +257,6 @@ export class UniswapLooksWeth extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
-
-    this.set("looksBalance", Value.fromBigInt(BigInt.zero()));
-    this.set("wethBalance", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -216,23 +285,5 @@ export class UniswapLooksWeth extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get looksBalance(): BigInt {
-    let value = this.get("looksBalance");
-    return value!.toBigInt();
-  }
-
-  set looksBalance(value: BigInt) {
-    this.set("looksBalance", Value.fromBigInt(value));
-  }
-
-  get wethBalance(): BigInt {
-    let value = this.get("wethBalance");
-    return value!.toBigInt();
-  }
-
-  set wethBalance(value: BigInt) {
-    this.set("wethBalance", Value.fromBigInt(value));
   }
 }
