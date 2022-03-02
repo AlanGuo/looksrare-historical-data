@@ -40,9 +40,9 @@ export function handleBlock(block: ethereum.Block): void {
   const looksPriceWethInWei = BigInt.fromString(looksPriceWethInWeiDecimal.toString().split(".")[0])
   log.debug("looksPriceWethInWei: {}", [looksPriceWethInWei.toString()])
   const relativeValueOfStakedTokensInWei = totalSharesLooksInWei.times(looksPriceWethInWei)
-  feeSharingReward.apy = BigDecimal.fromString(totalRewardWethPerYearInWei.toString()).
+  feeSharingReward.apr = BigDecimal.fromString(totalRewardWethPerYearInWei.toString()).
   div(BigDecimal.fromString(relativeValueOfStakedTokensInWei.toString()))
-  log.debug("apy: {}", [feeSharingReward.apy.toString()])
+  log.debug("apy: {}", [feeSharingReward.apr.toString()])
   feeSharingReward.save()
   reward.feeSharingReward = block.number.toString()
   
@@ -51,6 +51,6 @@ export function handleBlock(block: ethereum.Block): void {
   const looksRewardsPerBlock = looksDistributorContract.rewardPerBlockForStaking()
   const totalLooksRewardsPerYear = looksRewardsPerBlock.times(BigInt.fromU32(AVG_BLOCKS_PER_YEAR))
   const looksRewardApy = BigDecimal.fromString(totalLooksRewardsPerYear.toString()).div(BigDecimal.fromString(reward.totalLooksStaked.toString()))
-  reward.apy = feeSharingReward.apy.plus(looksRewardApy)
+  reward.apr = feeSharingReward.apr.plus(looksRewardApy)
   reward.save()
 }

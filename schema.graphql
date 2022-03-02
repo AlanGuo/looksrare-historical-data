@@ -1,6 +1,6 @@
 type Reward @entity {
   id: ID!
-  apy: BigDecimal!
+  apr: BigDecimal!
   totalLooksStaked: BigInt!
   timestamp: BigInt!
   looksReward: LooksReward
@@ -9,14 +9,14 @@ type Reward @entity {
 
 type LooksReward @entity {
   id: ID!
-  apy: BigDecimal!
+  apr: BigDecimal!
   looksRewardsPerBlock: BigInt!
   reward: Reward @derivedFrom(field: "looksReward")
 }
 
 type FeeSharingReward @entity {
   id: ID!
-  apy: BigDecimal!
+  apr: BigDecimal!
   wethRewardsPerBlock: BigInt!
   reward: Reward @derivedFrom(field: "feeSharingReward")
 }

@@ -16,7 +16,7 @@ export class Reward extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("apr", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("totalLooksStaked", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
   }
@@ -47,13 +47,13 @@ export class Reward extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get apy(): BigDecimal {
-    let value = this.get("apy");
+  get apr(): BigDecimal {
+    let value = this.get("apr");
     return value!.toBigDecimal();
   }
 
-  set apy(value: BigDecimal) {
-    this.set("apy", Value.fromBigDecimal(value));
+  set apr(value: BigDecimal) {
+    this.set("apr", Value.fromBigDecimal(value));
   }
 
   get totalLooksStaked(): BigInt {
@@ -114,7 +114,7 @@ export class LooksReward extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("apr", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("looksRewardsPerBlock", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -144,13 +144,13 @@ export class LooksReward extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get apy(): BigDecimal {
-    let value = this.get("apy");
+  get apr(): BigDecimal {
+    let value = this.get("apr");
     return value!.toBigDecimal();
   }
 
-  set apy(value: BigDecimal) {
-    this.set("apy", Value.fromBigDecimal(value));
+  set apr(value: BigDecimal) {
+    this.set("apr", Value.fromBigDecimal(value));
   }
 
   get looksRewardsPerBlock(): BigInt {
@@ -185,7 +185,7 @@ export class FeeSharingReward extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("apr", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("wethRewardsPerBlock", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -217,13 +217,13 @@ export class FeeSharingReward extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get apy(): BigDecimal {
-    let value = this.get("apy");
+  get apr(): BigDecimal {
+    let value = this.get("apr");
     return value!.toBigDecimal();
   }
 
-  set apy(value: BigDecimal) {
-    this.set("apy", Value.fromBigDecimal(value));
+  set apr(value: BigDecimal) {
+    this.set("apr", Value.fromBigDecimal(value));
   }
 
   get wethRewardsPerBlock(): BigInt {
